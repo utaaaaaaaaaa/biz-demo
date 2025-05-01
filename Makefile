@@ -9,9 +9,9 @@ gen-demo-thrift:
 
 .PHONY: gen-frontend
 gen-frontend:
-	@cd app/frontend && cwgo server --type HTTP --idl ../../idl/frontend/cart_page.proto --service frontend --module ${ROOT_MOD}/app/frontend -I ../../idl
+	@cd app/frontend && cwgo server --type HTTP --idl ../../idl/frontend/email_page.proto --service frontend --module ${ROOT_MOD}/app/frontend -I ../../idl
 
-.PHONY: gen-cart
-gen-cart:
-	@cd rpc_gen && cwgo client --type=RPC  --service=cart --module=${ROOT_MOD}/rpc_gen --idl=../idl/cart.proto --I=../idl
-	@cd app/cart && cwgo server --type=RPC  --service=cart --module=${ROOT_MOD}/app/cart --pass="-use ${ROOT_MOD}/rpc_gen/kitex_gen" --idl=../../idl/cart.proto --I=../../idl
+.PHONY: gen-email
+gen-email:
+	@cd rpc_gen && cwgo client --type=RPC  --service=email --module=${ROOT_MOD}/rpc_gen --idl=../idl/email.proto --I=../idl
+	@cd app/email && cwgo server --type=RPC  --service=email --module=${ROOT_MOD}/app/email --pass="-use ${ROOT_MOD}/rpc_gen/kitex_gen" --idl=../../idl/email.proto --I=../../idl

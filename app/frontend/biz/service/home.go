@@ -2,6 +2,10 @@ package service
 
 import (
 	"context"
+	"github.com/cloudwego/hertz/pkg/common/utils"
+	"github.com/cloudwego/kitex/pkg/klog"
+	"github.com/utaaaaaaaaaa/biz-demo/gomall/app/frontend/infra/rpc"
+	"github.com/utaaaaaaaaaa/biz-demo/gomall/rpc_gen/kitex_gen/product"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	common "github.com/utaaaaaaaaaa/biz-demo/gomall/app/frontend/hertz_gen/frontend/common"
@@ -17,21 +21,15 @@ func NewHomeService(Context context.Context, RequestContext *app.RequestContext)
 }
 
 func (h *HomeService) Run(req *common.Empty) (map[string]any, error) {
-	//defer func() {
-	// hlog.CtxInfof(h.Context, "req = %+v", req)
-	// hlog.CtxInfof(h.Context, "resp = %+v", resp)
-	//}()
-	// todo edit your code
-	var resp = make(map[string]any)
-	items := []map[string]any{
-		{"Name": "T-shirt-1", "Price": "$100", "Picture": "../static/image/t-shirt-1.jpeg"},
-		{"Name": "T-shirt-2", "Price": "$120", "Picture": "../static/image/t-shirt-2.jpeg"},
-		{"Name": "T-shirt-3", "Price": "$110", "Picture": "../static/image/t-shirt-1.jpeg"},
-		{"Name": "T-shirt-4", "Price": "$130", "Picture": "../static/image/t-shirt-2.jpeg"},
-		{"Name": "notebook", "Price": "$150", "Picture": "../static/image/notebook.jpeg"},
-		{"Name": "T-shirt-6", "Price": "$140", "Picture": "../static/image/t-shirt-1.jpeg"},
+	ctx := h.Context
+	p, err := rpc.ProductClient.ListProducts(ctx, &product.ListProductsReq{})
+	if err != nil {
+		klog.Error(err)
 	}
-	resp["Title"] = "Hot Sales"
-	resp["Items"] = items
-	return resp, nil
+	var cartNum int
+	return utils.H{
+		"title":    "Hot sale",
+		"cart_num": cartNum,
+		"items":    p.Products,
+	}, nil
 }
