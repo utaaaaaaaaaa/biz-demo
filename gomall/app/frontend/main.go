@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	prometheus "github.com/hertz-contrib/monitor-prometheus"
 	"github.com/hertz-contrib/sessions"
 	"github.com/hertz-contrib/sessions/redis"
 	"github.com/joho/godotenv"
@@ -34,18 +35,20 @@ import (
 var (
 	ServiceName  = frontendUtils.ServiceName
 	MetricsPort  = conf.GetConf().Hertz.MetricsPort
-	RegsiterAddr = conf.GetConf().Hertz.RegistryAddr
+	RegistryAddr = conf.GetConf().Hertz.RegistryAddr
 )
 
 func main() {
 	_ = godotenv.Load()
 	// init dal
 	// dal.Init()
-	consul, regsitryInfo := mtl.InitMetric(ServiceName, MetricsPort, RegsiterAddr)
-	defer consul.
-		rpc.Init()
+	consul, registryInfo := mtl.InitMetric(ServiceName, MetricsPort, RegistryAddr)
+	defer consul.Deregister(registryInfo)
+	rpc.Init()
 	address := conf.GetConf().Hertz.Address
-	h := server.New(server.WithHostPorts(address))
+	h := server.Default(server.WithHostPorts(address),
+		server.WithTracer(prometheus.NewServerTracer("", "", prometheus.WithDisableServer(true), prometheus.WithRegistry(mtl.Registry))),
+	)
 
 	registerMiddleware(h)
 
