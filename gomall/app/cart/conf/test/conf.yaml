@@ -1,6 +1,7 @@
 kitex:
   service: "cart"
   address: "172.31.112.1:8883"
+  metric_path: "172.31.112.1:9993"
   log_level: info
   log_file_name: "log/kitex.log"
   log_max_size: 10

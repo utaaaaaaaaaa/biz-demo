@@ -5,6 +5,7 @@ go 1.23.5
 replace (
 	github.com/apache/thrift => github.com/apache/thrift v0.13.0
 	github.com/utaaaaaaaaaa/biz-demo/gomall/app/frontend => ../frontend
+	github.com/utaaaaaaaaaa/biz-demo/gomall/common/serversuite => ../../common
 	github.com/utaaaaaaaaaa/biz-demo/gomall/rpc_gen => ../../rpc_gen
 )
 
@@ -15,7 +16,6 @@ require (
 	github.com/kitex-contrib/registry-consul v0.2.0
 	github.com/kr/pretty v0.3.1
 	github.com/redis/go-redis/v9 v9.7.3
-	github.com/utaaaaaaaaaa/biz-demo/gomall/app/frontend v0.0.0-00010101000000-000000000000
 	github.com/utaaaaaaaaaa/biz-demo/gomall/rpc_gen v0.0.0-00010101000000-000000000000
 	go.uber.org/zap v1.27.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -37,7 +37,6 @@ require (
 	github.com/cloudwego/fastpb v0.0.5 // indirect
 	github.com/cloudwego/frugal v0.2.5 // indirect
 	github.com/cloudwego/gopkg v0.1.4 // indirect
-	github.com/cloudwego/hertz v0.9.7 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/cloudwego/localsession v0.1.2 // indirect
 	github.com/cloudwego/netpoll v0.7.0 // indirect
