@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	consul "github.com/kitex-contrib/registry-consul"
 	"github.com/utaaaaaaaaaa/biz-demo/gomall/app/user/biz/dal"
+	"github.com/utaaaaaaaaaa/biz-demo/gomall/common/mtl"
+	"github.com/utaaaaaaaaaa/biz-demo/gomall/common/serversuite"
 	"log"
 	"net"
 	"time"
 
 	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	"github.com/utaaaaaaaaaa/biz-demo/gomall/app/user/conf"
@@ -18,11 +18,17 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+var (
+	ServiceName  = conf.GetConf().Kitex.Service
+	RegisterAddr = conf.GetConf().Registry.RegistryAddress[0]
+)
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	mtl.InitMetric(ServiceName, conf.GetConf().Kitex.MetricsPort, RegisterAddr)
 	dal.Init()
 	opts := kitexInit()
 
@@ -40,19 +46,10 @@ func kitexInit() (opts []server.Option) {
 	if err != nil {
 		panic(err)
 	}
-	opts = append(opts, server.WithServiceAddr(addr))
-
-	// service info
-	opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
-		ServiceName: conf.GetConf().Kitex.Service,
+	opts = append(opts, server.WithServiceAddr(addr), server.WithSuite(serversuite.CommonServerSuite{
+		CurrentServiceName: ServiceName,
+		RegistryAddr:       RegisterAddr,
 	}))
-
-	r, err := consul.NewConsulRegister(conf.GetConf().Registry.RegistryAddress[0])
-	if err != nil {
-		log.Fatal(err)
-	}
-	//配置注册中心
-	opts = append(opts, server.WithRegistry(r))
 
 	// klog
 	logger := kitexlogrus.NewLogger()

@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	consul "github.com/kitex-contrib/registry-consul"
+	"github.com/utaaaaaaaaaa/biz-demo/gomall/common/mtl"
+	"github.com/utaaaaaaaaaa/biz-demo/gomall/common/serversuite"
 
 	"github.com/utaaaaaaaaaa/biz-demo/gomall/app/product/biz/dal"
 
@@ -10,7 +11,6 @@ import (
 	"time"
 
 	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	"github.com/utaaaaaaaaaa/biz-demo/gomall/app/product/conf"
@@ -19,8 +19,14 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+var (
+	ServiceName  = conf.GetConf().Kitex.Service
+	RegisterAddr = conf.GetConf().Registry.RegistryAddress[0]
+)
+
 func main() {
 	_ = godotenv.Load()
+	mtl.InitMetric(ServiceName, conf.GetConf().Kitex.MetricsPort, RegisterAddr)
 	dal.Init()
 	opts := kitexInit()
 
@@ -38,15 +44,10 @@ func kitexInit() (opts []server.Option) {
 	if err != nil {
 		panic(err)
 	}
-	opts = append(opts, server.WithServiceAddr(addr))
-
-	r, err := consul.NewConsulRegister(conf.GetConf().Registry.RegistryAddress[0])
-
-	// service info
-	opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
-		ServiceName: conf.GetConf().Kitex.Service,
-	}), server.WithRegistry(r))
-
+	opts = append(opts, server.WithServiceAddr(addr), server.WithSuite(serversuite.CommonServerSuite{
+		CurrentServiceName: ServiceName,
+		RegistryAddr:       RegisterAddr,
+	}))
 	// klog
 	logger := kitexlogrus.NewLogger()
 	klog.SetLogger(logger)

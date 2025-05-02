@@ -10,6 +10,8 @@ import (
 	"github.com/utaaaaaaaaaa/biz-demo/gomall/app/frontend/biz/router"
 	"github.com/utaaaaaaaaaa/biz-demo/gomall/app/frontend/infra/rpc"
 	"github.com/utaaaaaaaaaa/biz-demo/gomall/app/frontend/middleware"
+	frontendUtils "github.com/utaaaaaaaaaa/biz-demo/gomall/app/frontend/utils"
+	"github.com/utaaaaaaaaaa/biz-demo/gomall/common/mtl"
 	"os"
 	"time"
 
@@ -29,11 +31,19 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+var (
+	ServiceName  = frontendUtils.ServiceName
+	MetricsPort  = conf.GetConf().Hertz.MetricsPort
+	RegsiterAddr = conf.GetConf().Hertz.RegistryAddr
+)
+
 func main() {
 	_ = godotenv.Load()
 	// init dal
 	// dal.Init()
-	rpc.Init()
+	consul, regsitryInfo := mtl.InitMetric(ServiceName, MetricsPort, RegsiterAddr)
+	defer consul.
+		rpc.Init()
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
 

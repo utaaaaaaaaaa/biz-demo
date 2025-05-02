@@ -1,6 +1,7 @@
 kitex:
   service: "payment"
   address: "172.31.112.1:8884"
+  metrics_port: "172.31.112.1:9994"
   log_level: info
   log_file_name: "log/kitex.log"
   log_max_size: 10
